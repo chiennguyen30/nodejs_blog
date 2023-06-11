@@ -1,24 +1,24 @@
-import express from "express";
-import { engine } from "express-handlebars";
-import morgan from "morgan";
-import { fileURLToPath } from "url";
-import path from "path";
+const express = require("express");
+const { engine } = require("express-handlebars");
+const morgan = require("morgan");
+const path = require("path");
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-
+const port = 3000;
+const route = require("./routes");
 app.use(morgan("combined"));
 
-app.use(express.static(__dirname + "/public"));
-
+app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+app.use(express.json());
 app.engine("hbs", engine({ extname: ".hbs" }));
 app.set("view engine", "hbs");
 app.set("views", "src/resources/views");
 
-app.get("/", (req, res) => {
-  res.render("home");
-});
-app.get("/news", (req, res) => {
-  res.render("news");
-});
-app.listen(3000);
+route(app);
+
+app.listen(port, () => console.log(`Example app listen at http://localhost:${port}`));
